@@ -12,6 +12,12 @@ try {
     $router = new \Bramus\Router\Router();
 
     // Define routes
+    $router->get('/registration-form', '\App\Controllers\RegistrationController@index');
+    $router->post('/register', '\App\Controllers\RegistrationController@register');
+
+    $router->get('/login-form', '\App\Controllers\LoginController@showLoginForm');
+    $router->post('/login', '\App\Controllers\LoginController@login');
+
     $router->get('/', '\App\Controllers\HomeController@index');
     $router->get('/suppliers', '\App\Controllers\SupplierController@list');
     $router->get('/suppliers/{id}', '\App\Controllers\SupplierController@single');
