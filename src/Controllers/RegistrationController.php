@@ -8,7 +8,7 @@ use App\Models\User;
 class RegistrationController extends BaseController
 {
 
-    public function index() {
+    public function showRegisterForm() {
 
         $template = 'registration-form';
 
@@ -19,7 +19,11 @@ class RegistrationController extends BaseController
 
     public function register() {
        
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
+        error_reporting(E_ALL);
         try {
+
             // Retrieve form data
             $username = $_POST['username'];
             $email = $_POST['email'];
@@ -63,6 +67,8 @@ class RegistrationController extends BaseController
                 echo "Passwords do not match.";
                 return;
             }
+
+            $passwordHash = password_hash($password, PASSWORD_BCRYPT);
 
             // If all checks pass, save the data using the User model
             $user = new User();

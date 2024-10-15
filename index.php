@@ -12,7 +12,7 @@ try {
     $router = new \Bramus\Router\Router();
 
     // Define routes
-    $router->get('/registration-form', '\App\Controllers\RegistrationController@index');
+    $router->get('/registration-form', '\App\Controllers\RegistrationController@showRegisterForm');
     $router->post('/register', '\App\Controllers\RegistrationController@register');
 
     $router->get('/login-form', '\App\Controllers\LoginController@showLoginForm');
