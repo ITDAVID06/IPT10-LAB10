@@ -34,6 +34,14 @@ class User extends BaseModel
         }
     }
 
+    public function getAllUsers()
+    {
+        $query = "SELECT id, first_name, last_name, email FROM users"; // Adjust according to your table structure
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Return data as an associative array
+    }
+
     // Function to retrieve password hash for login verification
     public function getPassword($username) {
         $sql = "SELECT password_hash FROM users WHERE username = :username;";

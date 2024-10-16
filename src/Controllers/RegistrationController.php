@@ -4,85 +4,81 @@ namespace App\Controllers;
 
 use App\Models\User;
 
-
 class RegistrationController extends BaseController
 {
-
     public function showRegisterForm() {
-
-        $template = 'registration-form';
-
-        $output = $this->render($template);
-
-        return $output;
+        // Show the empty registration form with no errors
+        return $this->render('registration-form');
     }
 
     public function register() {
-       
-        ini_set('display_errors', 1);
-        ini_set('display_startup_errors', 1);
-        error_reporting(E_ALL);
+
+        // Initialize errors array to store validation errors
+        $errors = [];
+    
         try {
-
             // Retrieve form data
-            $username = $_POST['username'];
-            $email = $_POST['email'];
-            $first_name = $_POST['first_name'];
-            $last_name = $_POST['last_name'];
-            $password = $_POST['password'];
-            $password_confirmation = $_POST['confirm_password'];
-
+            $username = $_POST['username'] ?? '';
+            $email = $_POST['email'] ?? '';
+            $first_name = $_POST['first_name'] ?? '';
+            $last_name = $_POST['last_name'] ?? '';
+            $password = $_POST['password'] ?? '';
+            $password_confirmation = $_POST['confirm_password'] ?? '';
+    
             // Required field check
             if (empty($username) || empty($email) || empty($password) || empty($password_confirmation)) {
-                echo "All required fields must be filled out.";
-                return;
+                $errors[] = "All required fields must be filled out.";
             }
-
+    
             // Password length check
             if (strlen($password) < 8) {
-                echo "Password must be at least 8 characters long.";
-                return;
+                $errors[] = "Password must be at least 8 characters long.";
             }
-
+    
             // Numeric character check
             if (!preg_match('/[0-9]/', $password)) {
-                echo "Password must contain at least one numeric character.";
-                return;
+                $errors[] = "Password must contain at least one numeric character.";
             }
-
+    
             // Non-numeric character check
             if (!preg_match('/[a-zA-Z]/', $password)) {
-                echo "Password must contain at least one non-numeric character.";
-                return;
+                $errors[] = "Password must contain at least one non-numeric character.";
             }
-
+    
             // Special character check
             if (!preg_match('/[\W]/', $password)) {
-                echo "Password must contain at least one special character (!@#$%^&*-+).";
-                return;
+                $errors[] = "Password must contain at least one special character (!@#$%^&*-+).";
             }
-
+    
             // Password confirmation check
             if ($password !== $password_confirmation) {
-                echo "Passwords do not match.";
-                return;
+                $errors[] = "Passwords do not match.";
             }
-
-            $passwordHash = password_hash($password, PASSWORD_BCRYPT);
-
+    
+            // Check if there are any validation errors
+            if (!empty($errors)) {
+                // Render the registration form with errors
+                $data = [
+                    'errors' => $errors, // Errors passed to Registration-Form.Mustache template
+                    'username' => $username,
+                    'email' => $email,
+                    'first_name' => $first_name,
+                    'last_name' => $last_name
+                ];
+    
+                return $this->render('registration-form', $data);
+            }
+    
             // If all checks pass, save the data using the User model
             $user = new User();
             $save_result = $user->save($username, $email, $first_name, $last_name, $password);
-
+    
             if ($save_result > 0) {
-                $template = 'success';
-                $output = $this->render($template);
-                return $output;
+                return $this->render('success'); // Registration success page
             } else {
                 echo "There was an error during registration. Please try again.";
             }
-        } catch (Exception $e) {
-            // Catch and display any errors
+        } catch (\Exception $e) {
             echo "Error: " . $e->getMessage();
         }
     }
